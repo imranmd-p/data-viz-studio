@@ -20,7 +20,7 @@ ChartJS.register(
   CategoryScale,
   LinearScale,
   Tooltip,
-  Legend
+  Legend,
 );
 
 export default function App() {
@@ -71,22 +71,24 @@ export default function App() {
     setNumbers(parsed);
   };
 
-  // 🔹 REAL AI (server.js)
+  // 🔥 UPDATED AI (Vercel backend)
   const handleAI = async () => {
     try {
-      const res = await fetch("http://localhost:3000/ai", {
+      const res = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          prompt: aiPrompt,
-          data: numbers,
+          message: `Analyze this data: ${JSON.stringify(numbers)}. Question: ${aiPrompt}`,
         }),
       });
 
       const result = await res.json();
-      setAiResponse(result.output);
+
+      const output = result?.choices?.[0]?.message?.content || "No response";
+
+      setAiResponse(output);
     } catch (err) {
       console.error(err);
       setAiResponse("AI error");
@@ -112,7 +114,6 @@ export default function App() {
 
   return (
     <div className="flex h-screen bg-[#1e293b] text-gray-100">
-
       {/* LEFT ICON BAR */}
       <div className="w-14 bg-[#020617] flex flex-col items-center py-4 gap-6">
         <div className="text-lg font-bold">D</div>
@@ -122,7 +123,6 @@ export default function App() {
 
       {/* DATA PANEL */}
       <div className="w-72 bg-[#0f172a] border-r border-gray-700 p-4 flex flex-col">
-
         <h2 className="font-semibold mb-1">Data Fields</h2>
         <p className="text-xs text-gray-400 mb-3">Add data to begin</p>
 
@@ -163,7 +163,6 @@ export default function App() {
 
       {/* MAIN */}
       <div className="flex-1 flex flex-col">
-
         {/* HEADER */}
         <div className="bg-[#0f172a] border-b border-gray-700 px-6 py-3 flex justify-between">
           <h1 className="font-semibold">Untitled Visualization</h1>
@@ -172,15 +171,12 @@ export default function App() {
             <button className="px-3 py-1 border border-gray-600 rounded">
               Clear
             </button>
-            <button className="px-3 py-1 bg-blue-600 rounded">
-              Save
-            </button>
+            <button className="px-3 py-1 bg-blue-600 rounded">Save</button>
           </div>
         </div>
 
         {/* CONFIG */}
         <div className="p-4 bg-[#0f172a] border-b border-gray-700 space-y-3">
-
           {/* FILTER */}
           <div className="border-dashed border border-gray-600 p-3 rounded text-sm text-gray-400">
             Drop fields here (Filters)
@@ -203,7 +199,9 @@ export default function App() {
           </div>
 
           {aiResponse && (
-            <div className="text-sm text-purple-300">{aiResponse}</div>
+            <div className="text-sm text-purple-300 whitespace-pre-wrap">
+              {aiResponse}
+            </div>
           )}
 
           {/* CHART TYPES */}
@@ -228,7 +226,6 @@ export default function App() {
         <div className="flex-1 flex items-center justify-center bg-[#1e293b]">
           {numbers.length > 0 ? (
             <div className="bg-[#0f172a] p-6 rounded shadow w-[600px]">
-
               {chartType === "bar" && <Bar data={chartData} />}
               {chartType === "line" && <Line data={chartData} />}
               {chartType === "pie" && <Pie data={chartData} />}
@@ -240,7 +237,9 @@ export default function App() {
                     {numbers.map((n, i) => (
                       <tr key={i}>
                         <td className="p-2 border border-gray-700">{n.name}</td>
-                        <td className="p-2 border border-gray-700">{n.value}</td>
+                        <td className="p-2 border border-gray-700">
+                          {n.value}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -263,7 +262,6 @@ export default function App() {
             ))}
           </div>
         )}
-
       </div>
     </div>
   );
