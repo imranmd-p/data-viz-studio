@@ -85,6 +85,7 @@ export default function App() {
       });
 
       const result = await res.json();
+      console.log(result);
 
       const output = result?.choices?.[0]?.message?.content || "No response";
 
